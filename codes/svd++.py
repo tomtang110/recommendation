@@ -7,10 +7,10 @@ class Svdpp(nn.Module):
         self.m = m
         self.n = n
         self.h_dim = hidden_dim
-        self.p_w = torch.randn((self.m,self.h_dim))
-        self.q_w = torch.randn((self.h_dim,self.n))
-        self.p_bias = torch.randn((1,self.m))
-        self.q_bias = torch.randn((self.n,1))
+        self.p_w = torch.randn((self.m,self.h_dim),requires_grad=True)
+        self.q_w = torch.randn((self.h_dim,self.n),requires_grad=True)
+        self.p_bias = torch.randn((1,self.m),requires_grad=True)
+        self.q_bias = torch.randn((self.n,1),requires_grad=True)
         self.alpha = alpha
         self.lambda1 = lambda_1
         self.beta1 = beta1
