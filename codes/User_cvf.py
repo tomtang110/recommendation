@@ -1,6 +1,6 @@
 import numpy as np
 from collections import defaultdict
-class UserCF(object):
+class Model(object):
     def __init__(self,user_,item_,userIIF=False):
         # 按照index, 一个user 对应一个 item
         # 假设user的index是0-N
@@ -8,6 +8,7 @@ class UserCF(object):
         self.user_ = user_
         self.item_ = item_
         self.userIIF = userIIF
+        self.W, self.user_item = self.userSimilarity()
 
     def userSimilarity(self):
 
@@ -19,7 +20,7 @@ class UserCF(object):
             item_user[item].add(user)
             user_item[user].add(item)
 
-        C = np.zeros([len(self.user_), len(self.user_)])
+        C = defaultdict(dict)
         N = defaultdict(int)
         # C:输出用户u与v共同的物品数目矩阵
         for item,users in item_user.items():
@@ -28,21 +29,24 @@ class UserCF(object):
                 for v in users:
                     if user == v:
                         continue
+                    C[user][v] = C[user].get(v,0)
                     if not self.userIIF:
                         C[user][v] += 1
                     else:
                         C[user][v] += 1/np.log(1+len(users))
-        for u in range(len(C)):
-            for v in range(len(C)):
-                C[u][v] /= np.sqrt((N[u] *N[v]))
-        return C,user_item
+        W = C.copy()
+        for u,related_users in C.items():
+            for v,cuv in related_users.items():
+                W[u][v] = cuv/np.sqrt(N[u]*N[v])
+
+        return W,user_item
 
     def recommend(self,userID,K,N):
-        W, user_item = self.userSimilarity()
+
         rank = defaultdict(int)
-        iteracted_item = user_item[userID]
-        for v in np.argsort(W[userID],reverse=True)[:K]:
-            for item in user_item[v]:
+        iteracted_item = self.user_item[userID]
+        for v,wuv in sorted(self.W[userID].items(),key= lambda x:x[1],reverse=True)[:K]:
+            for item in self.user_item[v]:
                 if item not in iteracted_item:
-                    rank[item] += W[userID][v]
+                    rank[item] += wuv
         return sorted(rank.items(), key=lambda d: d[1], reverse=True)[:N]
