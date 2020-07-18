@@ -6,6 +6,7 @@ class Model(object):
         self.users_ = users
         self.items_ = items
         self.IUF = useIUF
+        self.W, self.user_item = self.ItemSimilarity()
     def ItemSimilarity(self):
         user_item = defaultdict(set)
         for i in range(len(self.users_)):
@@ -35,10 +36,10 @@ class Model(object):
         return W, user_item
 
     def recommend(self,userID,K,N):
-        W, user_item = self.ItemSimilarity()
+
         rank =defaultdict(float)
-        iteracted_items = user_item[userID]
+        iteracted_items = self.user_item[userID]
         for i in iteracted_items:
-            for j,wij in sorted(W[i].items(),key= lambda x:x[1],reverse=True)[:K]:
+            for j,wij in sorted(self.W[i].items(),key= lambda x:x[1],reverse=True)[:K]:
                 rank[j] += wij
         return sorted(rank.items(), key=lambda d: d[1], reverse=True)[:N]

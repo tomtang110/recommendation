@@ -22,7 +22,7 @@ class FM(nn.Module):
             res = self.forward(x)
             loss = F.BCEWithLogitsLoss(res,y)
             loss.backward()
-            loss.step()
+            optimizer.step()
 
 
 

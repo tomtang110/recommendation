@@ -38,7 +38,7 @@ class FFM(nn.Module):
             pred = self.forward(X)
             loss = F.BCEWithLogitsLoss(pred,Y)
             loss.backward()
-            loss.step()
+            optimizer.step()
 
 
 
