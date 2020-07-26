@@ -5,7 +5,7 @@ from torch import optim
 
 class Model(nn.Module):
 
-    def __init__(self,embedding,m,n,hidden_dim,layer,alpha,lambda_1,beta1,epoch):
+    def __init__(self,embedding,m,n,hidden_dim,layer,alpha,epoch):
         self.m = m
         self.n = n
         embedding = torch.from_numpy(embedding)
@@ -21,13 +21,13 @@ class Model(nn.Module):
         for i in range(self.layers):
             Linear_users.append(nn.Linear(self.h_dim,self.h_dim))
             Linear_users.append(nn.ReLU())
-        self.Linear_user = nn.ModuleList(Linear_users)
+        self.Linear_user = nn.Sequential(Linear_users)
         Linear_items = [nn.Linear(m,self.h_dim)]
 
         for i in range(self.layers):
             Linear_items.append(nn.Linear(self.h_dim, self.h_dim))
             Linear_items.append(nn.ReLU())
-        self.Linear_item = nn.ModuleList(Linear_items)
+        self.Linear_item = nn.Sequential(Linear_items)
     def forward(self,user,item):
         users = self.embedding_user(user)
         items = self.embedding_item(item)
