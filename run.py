@@ -68,9 +68,9 @@ elif model_name in ['DMF']:
     data_label = np.zeros((user_nb,item_nb))
     for i in range(len(data_train)):
         data_label[data_train['user'][i],data_train['items'][i]] = data_train['ratings'][i]
-    
 
 
+# 什么
 
 print('precision: ',preci/count)
 
