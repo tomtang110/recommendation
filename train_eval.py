@@ -13,7 +13,7 @@ def train(config,model,train_iter=None,dev_iter=None,dev_index=None):
     last_improve = 0
     flag = True
     for ep in range(config.epoch):
-        print('Epoch [{}/{}]'.format(ep+1,config.epoch))
+#         print('Epoch [{}/{}]'.format(ep+1,config.epoch))
         output,regularizers = model(train_iter)
         model.zero_grad()
         loss = F.mse_loss(output,train_iter) + regularizers
@@ -24,7 +24,7 @@ def train(config,model,train_iter=None,dev_iter=None,dev_index=None):
             dev_loss = evaluate(output,dev_index,dev_iter)
             if dev_loss < dev_best_loss:
                 dev_best_loss = dev_loss
-                torch.save(model.state_dict(),config.save_path)
+                torch.save(model.state_dict(),config.save_path+'svdpp.ckpt')
                 improve = '*'
                 last_improve = total_batch
             else:
@@ -41,10 +41,9 @@ def train(config,model,train_iter=None,dev_iter=None,dev_index=None):
 
 
 def evaluate(R_matrix,dev_index,dev_iter):
-    R_matrix = R_matrix.cpu().numpy()
 
     output = R_matrix[dev_index,:]
-    loss = metrics.mean_squared_error(dev_iter,output)
+    loss =F.mse_loss(dev_iter,output)
 
     return loss
 
@@ -61,12 +60,3 @@ def test(config,model,test_index,K):
         recal += cal_Recall_at_k_for_each_user(K,result,test_index[user_])
 
     print('Precision: {}, Recall: {}'.format(prec/len(test_index),recal/len(test_index)))
-
-
-
-
-
-
-
-
-
