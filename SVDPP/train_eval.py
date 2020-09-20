@@ -1,8 +1,6 @@
 from torch.nn import functional as F
 import torch
-import time
-from sklearn import metrics
-from metrics import cal_precision_at_k,cal_Recall_at_k_for_each_user
+from SVDPP.metrics import cal_precision_at_k,cal_Recall_at_k_for_each_user,cal_ndcg_at_k_for_each_user
 
 def train(config,model,train_iter=None,dev_iter=None,dev_index=None):
 
@@ -54,9 +52,11 @@ def test(config,model,test_index,K):
     R_matrix = model.Pre.numpy()
     prec = 0.0
     recal = 0.0
+    ndgc = 0.0
     for user_ in test_index.keys():
         result = R_matrix[user_].argsort()[::-1][:K]
         prec += cal_precision_at_k(K,result,test_index[user_])
         recal += cal_Recall_at_k_for_each_user(K,result,test_index[user_])
+        ndgc += cal_ndcg_at_k_for_each_user(K,result,test_index[user_])
 
-    print('Precision: {}, Recall: {}'.format(prec/len(test_index),recal/len(test_index)))
+    print('Precision: {}, Recall: {} NDCG: {}'.format(prec/len(test_index),recal/len(test_index),ndgc/len(test_index)))

@@ -1,28 +1,43 @@
 import torch
 from torch import nn
-from torch import functional as F
+from torch.nn import functional as F
 from torch import optim
+
+
+class Config(object):
+    def __init__(self):
+        self.model_name = 'DMF'
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.m = 943
+        self.n = 1682
+        self.h_dim = 256
+        self.layer = 2
+        self.epoch = 10
+        self.lr= 1e-3
+        self.save_path = './Model_save/'
+        self.require_improvement = 100
 
 class Model(nn.Module):
 
-    def __init__(self,embedding,m,n,hidden_dim,layer,alpha,epoch):
-        self.m = m
-        self.n = n
-        embedding = torch.from_numpy(embedding)
+    def __init__(self,embedding,config):
+        super(Model,self).__init__()
+
+        self.m = config.m
+        self.n = config.n
         self.embedding_user = nn.Embedding.from_pretrained(embedding)
         self.embedding_item = nn.Embedding.from_pretrained(embedding.T)
 
-        self.h_dim = hidden_dim
-        self.layers = layer
-        self.lr = alpha
-        self.epoch = epoch
+        self.h_dim = config.h_dim
+        self.layers = config.layer
+        self.lr = config.lr
+        self.epoch = config.epoch
 
-        Linear_users = [nn.Linear(n,self.h_dim)]
+        Linear_users = [nn.Linear(self.n,self.h_dim)]
         for i in range(self.layers):
             Linear_users.append(nn.Linear(self.h_dim,self.h_dim))
             Linear_users.append(nn.ReLU())
         self.Linear_user = nn.Sequential(Linear_users)
-        Linear_items = [nn.Linear(m,self.h_dim)]
+        Linear_items = [nn.Linear(self.m,self.h_dim)]
 
         for i in range(self.layers):
             Linear_items.append(nn.Linear(self.h_dim, self.h_dim))

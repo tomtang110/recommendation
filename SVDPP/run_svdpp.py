@@ -1,12 +1,12 @@
 import pandas as pd
 from collections import defaultdict
-from importlib import import_module
 import numpy as np
 import torch
+from SVDPP.svdpp import Model,Config
 
-from train_eval import train,test
+from SVDPP.train_eval import train,test
 
-data_dir = './data/'
+data_dir = '../data/'
 data_train = pd.read_table(data_dir+'u1.base',names=['users','items','ratings','timestamp'])
 data_test = pd.read_table(data_dir+'u1.test',names=['users','items','ratings','timestamp'])
 
@@ -17,9 +17,8 @@ torch.backends.cudnn.deterministic = True  # 保证每次结果一样
 
 model_name = 'svd++'
 
-x = import_module('Model.'+model_name)
-config = x.Config()
-model = x.Model(config).to(config.device)
+config = Config()
+model = Model(config).to(config.device)
 
 data_train['users'] -= 1
 data_train['items'] -= 1

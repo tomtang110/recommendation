@@ -3,17 +3,16 @@ import pandas as pd
 from collections import defaultdict
 from importlib import import_module
 import numpy as np
-from sklearn import metrics
 
-from metrics import cal_precision_at_k
+from User_based_and_item_based.metrics import cal_precision_at_k
 
 
-data_dir = './data/ml-100k/'
+data_dir = '../data/ml-100k/'
 data_train = pd.read_csv(data_dir+'train_data.csv')
 data_test = pd.read_csv(data_dir+'test_data.csv')
 
 model_name = 'item_cf'
-model = import_module('codes.'+model_name)
+model = import_module('Model.'+model_name)
 
 user_nb = data_train['user'].nunique()
 item_nb = data_train['items'].nunique()
